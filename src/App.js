@@ -1,32 +1,10 @@
-import { TrashIcon } from '@heroicons/react/20/solid'
-import Image from 'next/image'
-
-const cartProducts = [
-  {
-    id: 1,
-    title: 'Basic Tee',
-    href: '#',
-    price: '$32.00',
-    color: 'Black',
-    size: 'Large',
-    imageSrc: '/product-01.jpg',
-    imageAlt: "Front of men's Basic Tee in black.",
-  },
-  {
-    id: 2,
-    title: 'Basic Tee',
-    href: '#',
-    price: '$32.00',
-    color: 'Sienna',
-    size: 'Large',
-    imageSrc: '/product-02.jpg',
-    imageAlt: "Front of men's Basic Tee in sienna.",
-  },
-]
+import { TrashIcon } from "@heroicons/react/20/solid";
+import Image from "next/image";
+import { useState } from "react";
 
 // Bu bileşen sipariş özeti içeren bir alışveriş sepeti görünümü sağlar.
 // Görevler:
-// 1. "Çöp kutusu" ikonuna tıklayarak listedeki ürünleri kaldırmayı mümkün hale getirin. 
+// 1. "Çöp kutusu" ikonuna tıklayarak listedeki ürünleri kaldırmayı mümkün hale getirin.
 //    - Ürün silindiğinde, ara toplam, kargo ve toplam fiyat değerlerinin doğru bir şekilde güncellenmesini sağlayın.
 // 2. Ara toplam, kargo ve toplam fiyat değerlerini dinamik hale getirin. (Kargo ücreti sabit olabilir, ancak ara toplam ürünlerin fiyatına göre hesaplanmalıdır.)
 // 3. "Siparişi onaylayın" butonuna tıklandığında, console.log() ile mevcut sipariş özeti bilgilerini (ürünler, ara toplam, toplam) görüntüleyin.
@@ -41,86 +19,144 @@ const cartProducts = [
 // 3. Her ürünün fiyatını hover sırasında vurgulamak için görsel efektler ekleyin (örneğin, fiyat metninin rengini değiştirin).
 
 export default function OrderSummary() {
+  const [cartProducts, setCartProducts] = useState([
+    {
+      id: 1,
+      title: "Basic Tee",
+      href: "#",
+      price: "$32.00",
+      color: "Black",
+      size: "Large",
+      imageSrc: "/product-01.jpg",
+      imageAlt: "Front of men's Basic Tee in black.",
+    },
+    {
+      id: 2,
+      title: "Basic Tee",
+      href: "#",
+      price: "$32.00",
+      color: "Sienna",
+      size: "Large",
+      imageSrc: "/product-02.jpg",
+      imageAlt: "Front of men's Basic Tee in sienna.",
+    },
+  ]);
+  const SHIPPING_COST = 5.0;
+  const removeProduct = (id) => {
+    if (window.confirm("Bu ürünü kaldırmak istediğinizden emin misiniz?")) {
+      setCartProducts(cartProducts.filter((product) => product.id !== id));
+    }
+  };
+  const subtotal = cartProducts.reduce(
+    (total, product) => total + parseFloat(product.price.replace("$", "")),
+    0
+  );
+
+  const total = subtotal + SHIPPING_COST;
+  const confirmOrder = () => {
+    console.log({
+      products: cartProducts,
+      subtotal,
+      total,
+    });
+  };
+
   return (
-    <div className='max-w-sm py-8 mx-auto'>
-      <h2 className='text-lg font-medium text-gray-900'>Sipariş özeti</h2>
+    <div className="max-w-sm py-8 mx-auto">
+      <h2 className="text-lg font-medium text-gray-900">Sipariş özeti</h2>
 
-      <div className='mt-4 rounded-lg border border-gray-200 bg-white shadow-sm'>
-        <h3 className='sr-only'>Alışveriş sepetinizdeki ürünler</h3>
-        <ul role='list' className='divide-y divide-gray-200'>
-          {cartProducts.map((product) => (
-            <li key={product.id} className='flex px-4 py-6 sm:px-6'>
-              <div className='flex-shrink-0'>
-                <Image
-                  src={product.imageSrc}
-                  alt={product.imageAlt}
-                  className='w-20 rounded-md'
-                  width={500}
-                  height={500}
-                />
-              </div>
-
-              <div className='ml-6 flex flex-1 flex-col'>
-                <div className='flex'>
-                  <div className='min-w-0 flex-1'>
-                    <h4 className='text-sm'>
-                      <a
-                        href={product.href}
-                        className='font-medium text-gray-700 hover:text-gray-800'
-                      >
-                        {product.title}
-                      </a>
-                    </h4>
-                    <p className='mt-1 text-sm text-gray-500'>
-                      {product.color}
-                    </p>
-                    <p className='mt-1 text-sm text-gray-500'>{product.size}</p>
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white shadow-sm">
+        {cartProducts.length > 0 ? (
+          <>
+            <ul role="list" className="divide-y divide-gray-200">
+              {cartProducts.map((product) => (
+                <li key={product.id} className="flex px-4 py-6 sm:px-6">
+                  <div className="flex-shrink-0">
+                    <Image
+                      src={product.imageSrc}
+                      alt={product.imageAlt}
+                      className="w-20 rounded-md"
+                      width={500}
+                      height={500}
+                    />
                   </div>
 
-                  <div className='ml-4 flow-root flex-shrink-0'>
-                    <button
-                      type='button'
-                      className='-m-2.5 flex items-center justify-center bg-white p-2.5 text-gray-400 hover:text-gray-500'
-                    >
-                      <span className='sr-only'>Kaldır</span>
-                      <TrashIcon className='h-5 w-5' aria-hidden='true' />
-                    </button>
+                  <div className="ml-6 flex flex-1 flex-col">
+                    <div className="flex">
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-sm">
+                          <a
+                            href={product.href}
+                            className="font-medium text-gray-700 hover:text-gray-800"
+                          >
+                            {product.title}
+                          </a>
+                        </h4>
+                        <p className="mt-1 text-sm text-gray-500">
+                          {product.color}
+                        </p>
+                        <p className="mt-1 text-sm text-gray-500">
+                          {product.size}
+                        </p>
+                      </div>
+
+                      <div className="ml-4 flow-root flex-shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => removeProduct(product.id)}
+                          className="-m-2.5 flex items-center justify-center bg-white p-2.5 text-gray-400 hover:text-red-500 transition"
+                        >
+                          <span className="sr-only">Kaldır</span>
+                          <TrashIcon className="h-5 w-5" aria-hidden="true" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-1 items-end justify-between pt-2">
+                      <p className="mt-1 text-sm font-medium text-gray-900 hover:text-indigo-600 transition">
+                        ${parseFloat(product.price.replace("$", "")).toFixed(2)}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                </li>
+              ))}
+            </ul>
 
-                <div className='flex flex-1 items-end justify-between pt-2'>
-                  <p className='mt-1 text-sm font-medium text-gray-900'>
-                    {product.price}
-                  </p>
-                </div>
+            <dl className="space-y-6 border-t border-gray-200 px-4 py-6 sm:px-6">
+              <div className="flex items-center justify-between">
+                <dt className="text-sm">Ara Toplam</dt>
+                <dd className="text-sm font-medium text-gray-900">
+                  ${subtotal.toFixed(2)}
+                </dd>
               </div>
-            </li>
-          ))}
-        </ul>
-        <dl className='space-y-6 border-t border-gray-200 px-4 py-6 sm:px-6'>
-          <div className='flex items-center justify-between'>
-            <dt className='text-sm'>Ara Toplam</dt>
-            <dd className='text-sm font-medium text-gray-900'>$64.00</dd>
-          </div>
-          <div className='flex items-center justify-between'>
-            <dt className='text-sm'>Kargo</dt>
-            <dd className='text-sm font-medium text-gray-900'>$5.00</dd>
-          </div>
-          <div className='flex items-center justify-between border-t border-gray-200 pt-6'>
-            <dt className='text-base font-medium'>Toplam</dt>
-            <dd className='text-base font-medium text-gray-900'>$69.00</dd>
-          </div>
-        </dl>
+              <div className="flex items-center justify-between">
+                <dt className="text-sm">Kargo</dt>
+                <dd className="text-sm font-medium text-gray-900">
+                  ${SHIPPING_COST.toFixed(2)}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between border-t border-gray-200 pt-6">
+                <dt className="text-base font-medium">Toplam</dt>
+                <dd className="text-base font-medium text-red-600 text-lg font-bold">
+                  ${total.toFixed(2)}
+                </dd>
+              </div>
+            </dl>
 
-        <div className='border-t border-gray-200 px-4 py-6 sm:px-6'>
-          <button
-            type='submit'
-            className='w-full rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50'
-          >
-            Siparişi onaylayın
-          </button>
-        </div>
+            <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
+              <button
+                type="submit"
+                onClick={confirmOrder}
+                className="w-full rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+              >
+                Siparişi onaylayın
+              </button>
+            </div>
+          </>
+        ) : (
+          <p className="p-6 text-center text-gray-500">Sepetiniz boş</p>
+        )}
       </div>
     </div>
-  )
+  );
 }
